@@ -1,18 +1,54 @@
 # Fake news!
 ***
 Detect Fake news.
+## requirements.txt
+```
+scikit-learn==0.21.2
+numpy==1.19.5
+pandas==1.1.0
+```
+
+## Structure
+* /data: dataset
+  * /train.csv labeled data
+  * /test.csv test data.
+  * /labels.csv ground true labels for testing.
+  * /toy_train_csv: a toy training data set
+* /test: unit tests
+* /out: store outputted models
+* /src: 
+  * /main.py: run the model 
+  * /build_model.py: define classifiers
+  * /encode_feature.py: featurization
+  * /utils.py: utils for loading data and dataset analysis
+## Run it
+train a svm classifier, run it on validation data:
+```
+python3 main.py --data_path ./data/train.csv --model svm
+```
+>Note: to train a naive bayes model, specify ```--model nb```. To know more about the parameters, see main.py.
+
+Test a model on test data:
+```
+python3 main.py --test --data_path ./data/train.csv --model svm
+```
+
 ## Dataset overview
 
 The training dataset has over 20,000 articles with fields for the article title, author, and text. The label field is the outcome variable where a 1 indicates the article is unreliable and a 0 indicates the article is reliable.
 * train.csv contains 20800 articles. The ratio between positive and negative is balanced.
-Some fields have missing values. The average article length is around 700.\
+Some fields have missing values. The average article length is around 700.
 | class | count |
 | :---: | :---: |
-| 0 | 10340? |
-| 1 | 10000? |
-* test.csv contains 5200 unlabeled articles.
-* labels.csv contains ground true labels for test.
-* toy_train_csv: a toy training data set
+| 0 | 10387 |
+| 1 | 10413 |
+
+| dataset | count |
+| :---: | :---: |
+| train.csv | 10387 |
+| test.csv | 10413 |
+
+
 
 ## Data preprocessing
 An article is a long document consists of title, author, and text where text may contain multiple lines of sentences. To determine
@@ -26,13 +62,7 @@ The max article length is limited to 128 where the exceeding part is truncated a
 Note: to accelerate BERT tokenizer, the text is pre-trimmed.
 
 ## System description
-### files and folders
-* /data: dataset
-* /test: unit tests
-* /out: store outputted models
-* /main.py: fine-tune and test a model 
-* /dataset.py: helper file to load dataset
-* /utils.py: utils for loading data and dataset analysis
+
 
 ### the model
 The pre-trained BERT base model is fine-tuned; the representation of [CLS] token in the final layer is used for classification.\
@@ -40,16 +70,6 @@ optimizer: Adam\
 loss function: Cross entropy loss
 
 
-### to run
-Start fine-tuning:
-```
-python3 main.py --train_path ./data/train.csv
-```
-Note: to know the parameters, see main.py.\
-Test a existing model:
-```
-python3 main.py --test --model_file ./out/bertfn
-```
 
 ## Evaluation
 Since the training dataset is balanced, and type I error and type II error are equally important, accuracy and F1 score could be used for evaluation. However, when dealing with real world data, positive samples are rarer. F1 score is more preferable than accuracy.\

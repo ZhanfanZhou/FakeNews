@@ -18,6 +18,7 @@ class DataReader:
             return X_train, X_test, Y_train, Y_test
 
         X_train, X_vali, Y_train, Y_vali = train_test_split(X_train, Y_train, test_size=0.2, random_state=args.seed)
+        X_train.info()
         return X_train, X_vali, Y_train, Y_vali
 
     @staticmethod
@@ -103,6 +104,7 @@ class DataReader:
         articles['article'] = articles['title'] + articles['author'] + articles['text']
         articles.drop(['id', 'title', 'author', 'text'], axis=1, inplace=True)
         articles.fillna('[EMPTY]', inplace=True)
+        labels.drop(['id'], axis=1, inplace=True)
         return articles, labels
 
 
@@ -116,13 +118,14 @@ def _contains_label(text: str):
     return text.endswith(",1") or text.endswith(",0")
 
 
-def analyze(df_articles, df_labels):
+def analyze_data(df_articles, df_labels):
     """
     simple dataset analysis, check the label distribution and average article length
     :param df_articles: dataframe
     :param df_labels: dataframe
     :return:
     """
+    df_articles.info()
     df = pd.concat([df_articles, df_labels], axis=1)
     df.columns = ['article', 'label']
     print("label distribution: \n", df.groupby("label").count().reset_index())
