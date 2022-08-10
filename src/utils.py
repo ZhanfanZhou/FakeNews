@@ -1,3 +1,5 @@
+import datetime
+import json
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
@@ -18,7 +20,6 @@ class DataReader:
             return X_train, X_test, Y_train, Y_test
 
         X_train, X_vali, Y_train, Y_vali = train_test_split(X_train, Y_train, test_size=0.2, random_state=args.seed)
-        X_train.info()
         return X_train, X_vali, Y_train, Y_vali
 
     @staticmethod
@@ -131,3 +132,11 @@ def analyze_data(df_articles, df_labels):
     print("label distribution: \n", df.groupby("label").count().reset_index())
     length = df['article'].apply(lambda text: len(text.replace('/n', ' ').split(' ')))
     print(f"average article length: {int(length.mean())}")
+
+
+def save_log(args, result):
+    time = datetime.datetime.now().strftime('%m-%d %H:%M:%S')
+    log_name = f'{args.log_path}/{time}.log'
+    with open(log_name, 'w') as f:
+        f.write(result + '\n')
+        f.write(json.dumps(vars(args))+'\n')

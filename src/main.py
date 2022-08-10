@@ -15,11 +15,12 @@ def main():
     parser.add_argument("--data_path", type=str, default="../data/toy_train.csv")
     parser.add_argument("--test_path", type=str, default="../data/test.csv")
     parser.add_argument("--test_label_path", type=str, default="../data/labels.csv")
+    parser.add_argument("--log_path", type=str, default="../out")
     parser.add_argument("--seed", type=int, default=1029)
     parser.add_argument("--test", action='store_true')
+    parser.add_argument("--log", action='store_true')
     parser.add_argument('--ngram', nargs='+', type=int, default=(1, 1))
     args = parser.parse_args()
-    args.test = True
     # load dataset
     X_train, X_test, Y_train, Y_test = DataReader.load_data(args)
     #
