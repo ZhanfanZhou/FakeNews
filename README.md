@@ -41,7 +41,7 @@ The ratio between positive and negative class is balanced.
 The average article length is around 700.
 
 | dataset | 0 class | 1 class | total |
-| :---: | :---: |
+| :---: | :---: | :---: | :---: |
 | train.csv | 10413 | 10387 | 20800 |
 | test.csv | - | - | 5200 |
 
@@ -53,14 +53,22 @@ the boundary of a article, rules belows are defined to detect article boundary:
     * the next line is an new article with a "strictly increasing by 1" #id or the end of file.
 
 2. Since the training dataset is balanced and all features are text, the features are concatenated to form a longer text.
-3. The nan data is filled with a default token to prevent missing values.
+3. The nan values are filled with a default token to prevent missing values.
 <!--- 
 The max article length is limited to 128 where the exceeding part is truncated and the missing part is filled with padding.
 
 Note: to accelerate BERT tokenizer, the text is pre-trimmed.
 -->
 
-## The model
+## The models
+Two models: a naive bayes classifier and a SVM classifier are trained.
+
+* Naive bayes is often used for spam detection, similar to Fake news detection.
+* SVM is a strong baseline for classification problem, it is faster than neural net in general.
+
+The n-gram features are extracted, which results in over 3000 dimensions feature vectors. The long articles alleviate the matrix sparsity issue to a certain extent.
+To reduce the computation overhead and avoid over-fitting the data, the feature dimension is trimmed.
+
 
 <!--
 The pre-trained BERT base model is fine-tuned; the representation of [CLS] token in the final layer is used for classification.\
@@ -72,19 +80,18 @@ loss function: Cross entropy loss
 ## Evaluation
 Since the training dataset is balanced, and type I error and type II error are equally important, accuracy and F1 score could be used for evaluation. However, when dealing with real world data, positive samples are rarer. F1 score is more preferable than accuracy.\
 Belows are F1 scores of validation data and test data respectively.
+
 | model | hyper-param | F1 score |
 | :---: | :---: | :---: |
-| DistilBERT | batch_size=32,lr=1e-5,epoch=1 | 0.? |
 | Naive bayes | - | 0.727 |
-| SVM | c=0.5,$\gamma$= | 0.95 |
-## QA
+| SVM(rbf) | c=0.5,$\gamma$=scale | 0.65 |
+## what's next
 
-### why BERT
-BERT bases on Transformer which takes good care of long input sequence whereas RNN like models may suffer from long dependency issue.
 ### parameter tuning
-BERT fine-tuning requires huge computation overhead, a validation dataset is split from the training dataset for hyper-parameter tuning.
-### possible improvement
-Other than the parameter tuning, learning tricks such as scheduler etc., we may consider:
+It is possible to perform a grid search to find the optimal hyper-params.
+### use BERT
+BERT bases on the Transformer which takes good care of long input sequence whereas RNN like models may suffer from long dependency issue.
+### other possible improvement
 * making use of the meta info such as author: if possible, learn author embeddings. The hypothesis is some authors are fake news maker.
 
 * The text length is limited due to limited computation resources. For a long text classification task, one may use a sliding window on a long doc (with overlaps).
