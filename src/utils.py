@@ -1,0 +1,130 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
+
+class DataReader:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def load_data(args):
+        """
+        load training data or test data
+        :return iterable dataframe objects
+        """
+        X_train, Y_train = DataReader._read_training(args.data_path)
+        if args.test:
+            X_test, Y_test = DataReader._read_test(args.test_path, args.test_label_path)
+            return X_train, X_test, Y_train, Y_test
+
+        X_train, X_vali, Y_train, Y_vali = train_test_split(X_train, Y_train, test_size=0.2, random_state=args.seed)
+        return X_train, X_vali, Y_train, Y_vali
+
+    @staticmethod
+    def _read_training(train_src: str):
+        """
+        Read in training csv and corresponding label csv. Header is included.
+        :param train_src: path to training file
+        :return: an iterable Panda.DataFrame object
+        """
+        articles, labels = DataReader._transform_training(train_src)
+        articles, labels = pd.DataFrame(articles, dtype=str, columns=['article']), pd.DataFrame(labels, dtype=int)
+        articles.fillna('[EMPTY]', inplace=True)
+        return articles, labels
+
+    @staticmethod
+    def _read_test(test_src: str, label_src: str):
+        """
+        Read in test csv and ground true labels. Header is included.
+        :param test_src: path to testing
+        :param label_src: path to labels
+        :return: an iterable Panda.DataFrame object
+        """
+        return DataReader._transform_test(test_src, label_src)
+
+    @staticmethod
+    def _transform_training(train_src):
+        """
+        pre-process and collate training samples from file.
+        The ids are strictly increasing by 1, the end of a article is defined by the following rules:
+        1, it contains a label at the end;
+        2, the next line is a new sample or the end of the file.
+        :param train_src: path to training csv file
+        :return: a list of articles, a list of labels
+        """
+        articles, labels = [], []
+        with open(train_src, 'r') as f:
+            # skip the header
+            next(f)
+            line = f.readline()
+            aid, text, label = None, None, None
+            while line:
+                # if a new article is found
+                if aid is None:
+                    if _contains_label(line):
+                        # this is a one-liner sample
+                        _, rest = line.split(",", maxsplit=1)
+                        text, _, label = rest.strip().rpartition(",")
+                        articles.append(text)
+                        labels.append(label)
+                    else:
+                        aid, text = line.split(",", maxsplit=1)
+                    line = f.readline()
+
+                # a article is under processing
+                else:
+                    # if the current line could be the last line of a article
+                    if _contains_label(line):
+                        # if a new tweet is found in the next line, we are sure this is the end of a article
+                        next_line = f.readline()
+                        if not next_line or next_line.startswith(str(int(aid)+1)+','):
+                            more_text, _, label = line.rpartition(',')
+                            text += more_text.strip()
+                            line = next_line
+                            articles.append(text)
+                            labels.append(label)
+                            aid = None
+                            continue
+                    # not the end of current article
+                    text += line
+                    line = f.readline()
+        return articles, labels
+
+    @staticmethod
+    def _transform_test(test_src, label_src):
+        """
+        load test data from file, then merge the columns
+        :param test_src:
+        :param label_src:
+        :return: text dataframe and label dataframe
+        """
+        labels = pd.read_csv(label_src, header=0, encoding='utf-8', dtype=int)
+        articles = pd.read_csv(test_src, header=0, encoding='utf-8', dtype=str)
+        articles['article'] = articles['title'] + articles['author'] + articles['text']
+        articles.drop(['id', 'title', 'author', 'text'], axis=1, inplace=True)
+        articles.fillna('[EMPTY]', inplace=True)
+        return articles, labels
+
+
+def _contains_label(text: str):
+    """
+    check if the given text contains label at the end, if yes it may be the end of a sample.
+    :param text: a given line
+    :return: a boolean value, if True is returned, the given text contains label information
+    """
+    text = text.strip()
+    return text.endswith(",1") or text.endswith(",0")
+
+
+def analyze(df_articles, df_labels):
+    """
+    simple dataset analysis, check the label distribution and average article length
+    :param df_articles: dataframe
+    :param df_labels: dataframe
+    :return:
+    """
+    df = pd.concat([df_articles, df_labels], axis=1)
+    df.columns = ['article', 'label']
+    print("label distribution: \n", df.groupby("label").count().reset_index())
+    length = df['article'].apply(lambda text: len(text.replace('/n', ' ').split(' ')))
+    print(f"average article length: {int(length.mean())}")
