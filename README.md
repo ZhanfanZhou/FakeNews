@@ -35,40 +35,38 @@ python3 main.py --test --data_path ./data/train.csv --model svm
 
 ## Dataset overview
 
-The training dataset has over 20,000 articles with fields for the article title, author, and text. The label field is the outcome variable where a 1 indicates the article is unreliable and a 0 indicates the article is reliable.
-* train.csv contains 20800 articles. The ratio between positive and negative is balanced.
-Some fields have missing values. The average article length is around 700.
-| class | count |
-| :---: | :---: |
-| 0 | 10387 |
-| 1 | 10413 |
+The training dataset has over 20,000 articles with fields for the article title, author, and text.
+The label field is the outcome variable where a 1 indicates the article is unreliable and a 0 indicates the article is reliable.
+The ratio between positive and negative class is balanced.
+The average article length is around 700.
 
-| dataset | count |
+| dataset | 0 class | 1 class | total |
 | :---: | :---: |
-| train.csv | 10387 |
-| test.csv | 10413 |
-
+| train.csv | 10413 | 10387 | 20800 |
+| test.csv | - | - | 5200 |
 
 
 ## Data preprocessing
-An article is a long document consists of title, author, and text where text may contain multiple lines of sentences. To determine
+1. An article is a long document consists of title, author, and text where text may contain multiple lines of sentences. To determine
 the boundary of a article, rules belows are defined to detect article boundary:
-* the last line of an article contains a label at the end;
-* the next line is an new article with a "strictly increasing by 1" #id or the end of file.
+    * the last line of an article contains a label at the end;
+    * the next line is an new article with a "strictly increasing by 1" #id or the end of file.
 
-Since the training dataset is balanced, and feature fields are text, the whole feature fields are concatenated to form a longer text.
+2. Since the training dataset is balanced and all features are text, the features are concatenated to form a longer text.
+3. The nan data is filled with a default token to prevent missing values.
+<!--- 
 The max article length is limited to 128 where the exceeding part is truncated and the missing part is filled with padding.
 
 Note: to accelerate BERT tokenizer, the text is pre-trimmed.
+-->
 
-## System description
+## The model
 
-
-### the model
+<!--
 The pre-trained BERT base model is fine-tuned; the representation of [CLS] token in the final layer is used for classification.\
 optimizer: Adam\
 loss function: Cross entropy loss
-
+-->
 
 
 ## Evaluation
@@ -76,10 +74,9 @@ Since the training dataset is balanced, and type I error and type II error are e
 Belows are F1 scores of validation data and test data respectively.
 | model | hyper-param | F1 score |
 | :---: | :---: | :---: |
-| 1 | batch_size=32,lr=1e-5,epoch=1 | 0.998 |
-| 2 | batch_size=32,lr=1e-5 | 66.6 |
-| Naive bayes | - | 0.802 |
-| SVM | c=0.5,\gamma= | 0.95 |
+| DistilBERT | batch_size=32,lr=1e-5,epoch=1 | 0.? |
+| Naive bayes | - | 0.727 |
+| SVM | c=0.5,$\gamma$= | 0.95 |
 ## QA
 
 ### why BERT
