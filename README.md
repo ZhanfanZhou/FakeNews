@@ -47,10 +47,10 @@ The average article length is around 780.
 
 
 ## Data preprocessing
-1. An article is a long document consists of title, author, and text where text may contain multiple lines of sentences. To determine
-the boundary of a article, rules belows are defined to detect article boundary:
+1. An article is a long document that consists of title, author, and text where text may contain multiple lines of sentences. To determine
+the boundary of an article, rules below are defined to detect article boundary:
     * the last line of an article contains a label at the end;
-    * the next line is an new article with a "strictly increasing by 1" #id or the end of file.
+    * the next line is an new article with a "strictly increasing by 1" #id or the end of the file.
 
 2. Since the training dataset is balanced and all features are text, the features are concatenated to form a longer text.
 3. The nan values are filled with a default token to prevent missing values.
@@ -70,6 +70,7 @@ The n-gram features are extracted, which results in over 3000 dimensions feature
 To reduce the computation overhead and avoid over-fitting the data, the feature dimension is trimmed.
 
 
+
 <!--
 The pre-trained BERT base model is fine-tuned; the representation of [CLS] token in the final layer is used for classification.\
 optimizer: Adam\
@@ -78,18 +79,26 @@ loss function: Cross entropy loss
 
 
 ## Evaluation
-Since the training dataset is balanced, and type I error and type II error are equally important, accuracy and F1 score could be used for evaluation. However, when dealing with real world data, positive samples are rarer. F1 score is more preferable than accuracy.\
+Since the training dataset is balanced, and type I error and type II error are equally important, accuracy and F1 score could be used for evaluation. However, when dealing with real world data, positive samples are rarer.
+F1 score is preferable to accuracy.
+
 Belows are F1 scores of validation data and test data respectively.
 
 | model | hyper-param | F1 score |
 | :---: | :---: | :---: |
 | Naive bayes | - | 0.727 |
-| SVM(rbf) | c=0.5,$\gamma$=scale | 0.65 |
+| SVM(poly) | c=0.9,gamma=scale | 0.773 |
+| SVM(rbf) | c=0.9,$\Gamma$=scale | 0.650 |
 ## what's next
 
 ### parameter tuning
 It is possible to perform a grid search to find the optimal hyper-params.
-### use BERT
+### handle overfitting
+The preliminary experiments on validation data show both SVMs and Naive bayes overfit the training data easily. The performances drop significantly when models are tested on test data compared with validation data.
+
+Increasinthe data variety, performing feature selection, adding regularization could help in our scenario.
+
+### BERT fine-tuning
 BERT bases on the Transformer which takes good care of long input sequence whereas RNN like models may suffer from long dependency issue.
 ### other possible improvement
 * making use of the meta info such as author: if possible, learn author embeddings. The hypothesis is some authors are fake news maker.
