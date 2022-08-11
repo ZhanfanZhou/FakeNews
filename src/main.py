@@ -16,16 +16,18 @@ def main():
     parser.add_argument("--test_path", type=str, default="../data/test.csv")
     parser.add_argument("--test_label_path", type=str, default="../data/labels.csv")
     parser.add_argument("--log_path", type=str, default="../out")
-    parser.add_argument("--seed", type=int, default=1029)
+    parser.add_argument("--seed", type=int, default=512)
     parser.add_argument("--test", action='store_true')
     parser.add_argument("--log", action='store_true')
     parser.add_argument('--ngram', nargs='+', type=int, default=(1, 1))
-
+    parser.add_argument('--svm_c', type=float, default=0.9)
+    parser.add_argument('--svm_gamma', type=str, default='scale')
+    parser.add_argument('--svm_kernel', type=str, default='poly')
     args = parser.parse_args()
     # load dataset
     print('loading data')
     X_train, X_test, Y_train, Y_test = DataReader.load_data(args)
-    analyze_data(X_train, Y_train)
+    # analyze_data(X_train, Y_train)
     # featurize
     X_train, X_test = FeatureEncoder(args).encode(X_train, X_test)
     # training and testing

@@ -3,8 +3,11 @@ import json
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
+DEFAULT_TOKEN = "[EMPTY]"
+
 
 class DataReader:
+    """a Helper class to load data from file"""
     def __init__(self):
         pass
 
@@ -12,7 +15,7 @@ class DataReader:
     def load_data(args):
         """
         load training data or test data
-        :return iterable dataframe objects
+        :return trainable dataframe objects
         """
         X_train, Y_train = DataReader._read_training(args.data_path)
         if args.test:
@@ -25,27 +28,27 @@ class DataReader:
     @staticmethod
     def _read_training(train_src: str):
         """
-        Read in training csv and corresponding label csv. Header is included.
-        :param train_src: path to training file
-        :return: an iterable Panda.DataFrame object
+        Read in the training file. The NaN values are dropped.
+        :param train_src: path to the training file
+        :return: DataFrame objects for samples and labels
         """
         articles, labels = DataReader._transform_training(train_src)
         articles, labels = pd.DataFrame(articles, dtype=str, columns=['article']), pd.DataFrame(labels, dtype=int)
-        articles.fillna('[EMPTY]', inplace=True)
+        articles.dropna(inplace=True)
         return articles, labels
 
     @staticmethod
     def _read_test(test_src: str, label_src: str):
         """
-        Read in test csv and ground true labels. Header is included.
-        :param test_src: path to testing
+        Read in test csv and ground true labels.
+        :param test_src: path to test file
         :param label_src: path to labels
-        :return: an iterable Panda.DataFrame object
+        :return: DataFrame objects for samples and labels
         """
         return DataReader._transform_test(test_src, label_src)
 
     @staticmethod
-    def _transform_training(train_src):
+    def _transform_training(train_src: str):
         """
         pre-process and collate training samples from file.
         The ids are strictly increasing by 1, the end of a article is defined by the following rules:
@@ -64,8 +67,10 @@ class DataReader:
                 # if a new article is found
                 if aid is None:
                     if _contains_label(line):
-                        # this is a one-liner sample
+                        # this is a one-liner sample;
+                        # first split the line by the left most ","
                         _, rest = line.split(",", maxsplit=1)
+                        # then split the rest by the right most ","
                         text, _, label = rest.strip().rpartition(",")
                         articles.append(text)
                         labels.append(label)
@@ -80,6 +85,7 @@ class DataReader:
                         # if a new tweet is found in the next line, we are sure this is the end of a article
                         next_line = f.readline()
                         if not next_line or next_line.startswith(str(int(aid)+1)+','):
+                            # split the line by the right most ","
                             more_text, _, label = line.rpartition(',')
                             text += more_text.strip()
                             line = next_line
@@ -93,18 +99,21 @@ class DataReader:
         return articles, labels
 
     @staticmethod
-    def _transform_test(test_src, label_src):
+    def _transform_test(test_src: str, label_src: str):
         """
-        load test data from file, then merge the columns
-        :param test_src:
-        :param label_src:
-        :return: text dataframe and label dataframe
+        Load test data, labels from file.
+        For the test data:
+        1. Title, author, text columns are merged to form "article" column
+        2. The NaN values are filled with DEFAULT_TOKEN.
+        :param test_src: path to test file
+        :param label_src: path to labels
+        :return: an article dataframe and a label dataframe
         """
         labels = pd.read_csv(label_src, header=0, encoding='utf-8', dtype=int)
         articles = pd.read_csv(test_src, header=0, encoding='utf-8', dtype=str)
         articles['article'] = articles['title'] + articles['author'] + articles['text']
         articles.drop(['id', 'title', 'author', 'text'], axis=1, inplace=True)
-        articles.fillna('[EMPTY]', inplace=True)
+        articles.fillna(DEFAULT_TOKEN, inplace=True)
         labels.drop(['id'], axis=1, inplace=True)
         return articles, labels
 
@@ -113,7 +122,7 @@ def _contains_label(text: str):
     """
     check if the given text contains label at the end, if yes it may be the end of a sample.
     :param text: a given line
-    :return: a boolean value, if True is returned, the given text contains label information
+    :return: a boolean value, if True, the given text contains label information
     """
     text = text.strip()
     return text.endswith(",1") or text.endswith(",0")
@@ -121,10 +130,9 @@ def _contains_label(text: str):
 
 def analyze_data(df_articles, df_labels):
     """
-    simple dataset analysis, check the label distribution and average article length
-    :param df_articles: dataframe
-    :param df_labels: dataframe
-    :return:
+    simple dataset analysis, inspect the label distribution and average article length
+    :param df_articles: a dataframe
+    :param df_labels: a corresponding label dataframe
     """
     df_articles.info()
     df = pd.concat([df_articles, df_labels], axis=1)
@@ -134,7 +142,10 @@ def analyze_data(df_articles, df_labels):
     print(f"average article length: {int(length.mean())}")
 
 
-def save_log(args, result):
+def save_log(args, result: str):
+    """
+    save args and result to args.log_path
+    """
     time = datetime.datetime.now().strftime('%m-%d %H:%M:%S')
     log_name = f'{args.log_path}/{time}.log'
     with open(log_name, 'w') as f:

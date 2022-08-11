@@ -88,7 +88,7 @@ Belows are F1 scores of validation data and test data respectively.
 | :---: | :---: | :---: |
 | Naive bayes | - | 0.727 |
 | SVM(poly) | c=0.9,gamma=scale | 0.773 |
-| SVM(rbf) | c=0.9,$\Gamma$=scale | 0.650 |
+| SVM(rbf) | c=0.9,gamma=scale | 0.650 |
 ## what's next
 
 ### parameter tuning
