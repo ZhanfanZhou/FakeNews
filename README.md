@@ -24,13 +24,13 @@ pandas==1.1.0
 ## Run it
 train a svm classifier, run it on validation data:
 ```
-python3 main.py --data_path ./data/train.csv --model svm
+python3 main.py --data_path ../data/train.csv --model svm
 ```
 >Note: to train a naive bayes model, specify ```--model nb```. To know more about the parameters, see main.py.
 
 Test a model on test data:
 ```
-python3 main.py --test --data_path ./data/train.csv --model svm
+python3 main.py --test --data_path ../data/train.csv --model svm --log
 ```
 
 ## Dataset overview
@@ -38,7 +38,7 @@ python3 main.py --test --data_path ./data/train.csv --model svm
 The training dataset has over 20,000 articles with fields for the article title, author, and text.
 The label field is the outcome variable where a 1 indicates the article is unreliable and a 0 indicates the article is reliable.
 The ratio between positive and negative class is balanced.
-The average article length is around 700.
+The average article length is around 780.
 
 | dataset | 0 class | 1 class | total |
 | :---: | :---: | :---: | :---: |

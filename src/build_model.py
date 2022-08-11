@@ -8,10 +8,10 @@ class Classifier:
     def __init__(self, args, X, Y):
         self.args = args
         Y = Y.to_numpy().ravel()
+        X = X.toarray()
         if 'svm' in args.model:
-            self.model = SVC(C=0.5, gamma='scale', kernel='rbf').fit(X, Y)
+            self.model = SVC(C=0.8, gamma='scale', kernel='poly').fit(X, Y)
         if 'nb' in args.model:
-            X = X.toarray()
             self.model = GaussianNB().fit(X, Y)
 
     def predict(self, X):
@@ -19,6 +19,7 @@ class Classifier:
 
     def evaluate(self, Y_hat, Y):
         result = metrics.classification_report(Y, Y_hat, digits=3, output_dict=False)
+        print(result)
         if self.args.log:
             save_log(self.args, result)
 
