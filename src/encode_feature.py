@@ -19,7 +19,7 @@ class FeatureEncoder:
         :return: numpy array feature vectors for training and testing in shape (num_samples, num_features)
         """
         vectorizer = CountVectorizer(analyzer='word', ngram_range=self.args.ngram, min_df=1, stop_words='english',
-                                     max_features=512)
+                                     max_features=1029)
         # get features
         X_train = vectorizer.fit_transform(X_train['article'])
         X_test = vectorizer.transform(X_test['article'])
