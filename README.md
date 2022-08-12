@@ -1,12 +1,13 @@
 # Fake news!
 ***
 Detect Fake news.
-## requirements.txt
+## requirements.txt & Environment
 ```
 scikit-learn==0.21.2
 numpy==1.19.5
 pandas==1.1.0
 ```
+python3.6
 
 ## Structure
 * /data: dataset
@@ -91,7 +92,7 @@ The rules include 1-4 lines as article 2.
 Step 2. Since the training dataset is balanced and all features are text, the features are concatenated to form a longer text.
 
 
-Step 3. The NaN values are filled with a default token to prevent missing values.*
+Step 3. The NaN values are filled with a default token to prevent missing values.
 
 ## The models
 Base models: a naive bayes classifier 

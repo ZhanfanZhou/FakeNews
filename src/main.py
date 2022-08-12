@@ -41,13 +41,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-# how to install? setup
-
-# for more details refer to... section
-#
-# avg length bin huatu
-#
-#
-# input yangzi
-#
-# expanding feature
