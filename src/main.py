@@ -42,8 +42,7 @@ def main():
 if __name__ == '__main__':
     main()
 # how to install? setup
-# svm
-# nb
+
 # for more details refer to... section
 #
 # avg length bin huatu

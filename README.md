@@ -23,19 +23,33 @@ pandas==1.1.0
   * /utils.py: utils for loading data and dataset analysis
   
 ## Run it
-train a svm classifier, run it on validation data:
+To train a svm classifier and test it on validation data, run:
 ```
 python3 main.py --data_path ../data/train.csv --model svm
 ```
->Note: to train a naive bayes model, specify ```--model nb```
+>To specify hyper-parameters for SVM, use
+```--svm_c```, ```--svm_gamma```, ```--svm_kernel```
 
-Test a model on test data:
+To train a Naive bayes classifier and test it on validation data, run:
+```
+python3 main.py --data_path ../data/train.csv --model nb
+```
+
+To test a model on test data:
 ```
 python3 main.py --test --data_path ../data/train.csv --model svm --log
 ```
 Arguments:
+
+```--model ```: specify nb or svm
+
 ```--test```: run test on test data instead of validation data;
-```--log```: output log; ```--data_path```: path to training data; ```--svm_c```, ```--svm_gamma```, ```--svm_kernel```: SVM parameters
+
+```--log```: output log; 
+
+```--data_path```: path to training data;
+
+To know more about the details, refer to main.py
 
 ## Dataset overview
 
@@ -51,7 +65,7 @@ The average article length is around 780.
 
 
 ## Data preprocessing
-1. An article is a long document that consists of title, author, and text where text may contain multiple lines of sentences. To determine
+Step: 1. An article is a long document that consists of title, author, and text where text may contain multiple lines of sentences. To determine
 the boundary of an article, rules below are defined to detect article boundary:
     * the last line of an article contains a label at the end;
     * the next line is an new article with a "strictly increasing by 1" #id or the end of the file.
@@ -68,6 +82,8 @@ Article 2 consists of 4 lines where the label (1) is shown in the last line. Art
 The rules includes 1-4 lines as article 2.
 
 2. Since the training dataset is balanced and all features are text, the features are concatenated to form a longer text.
+
+
 3. The nan values are filled with a default token to prevent missing values.*
 <!--- 
 The max article length is limited to 128 where the exceeding part is truncated and the missing part is filled with padding.
@@ -76,21 +92,16 @@ Note: to accelerate BERT tokenizer, the text is pre-trimmed.
 -->
 
 ## The models
-Two models: a naive bayes classifier and a SVM classifier are trained.
+Base models: a naive bayes classifier 
+First iteration: a SVM classifier
 
 * Naive bayes is often used for spam detection, similar to Fake news detection.
-* SVM is a strong baseline for classification problem, it is faster than neural net in general.
+* SVM is a strong baseline for classification problem, it is faster than neural nets in general.
+### SVM hyper-parameters
 
+### feature extraction
 The n-gram features are extracted, which results in over 3000 dimensions feature vectors. The long articles alleviate the matrix sparsity issue to a certain extent.
 To reduce the computation overhead and avoid over-fitting the data, the feature dimension is trimmed.
-
-
-
-<!--
-The pre-trained BERT base model is fine-tuned; the representation of [CLS] token in the final layer is used for classification.\
-optimizer: Adam\
-loss function: Cross entropy loss
--->
 
 
 ## Evaluation
@@ -99,34 +110,32 @@ F1 score is preferable to accuracy.
 
 The cost expense of type I error and type II error are unclear, so the precision, recall and F1 score are listed.
 
-Belows are F1 scores on test data.
+Belows are Precision, recall and F1 scores on test data.
 
-| model | hyper-param | Precision-0 | Recall-0 | Precision-1 | Recall-1 | F1 score |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| Naive bayes | - | 0.755 | 0.648 | 0.742 | 0.828 | 0.740 |
-| SVM(poly) | c=0.98,gamma=scale | 0.923 | 0.583 | 0.738 | 0.960 | 0.775 |
-| SVM(rbf) | c=0.98,gamma=scale | 0.651 | 0.626 | 0.690 | 0.679 | 0.653 |
+| model | hyper-param | Precision | Recall | F1 score |
+| :---: | :---: | :---: | :---: | :---: |
+| Naive bayes | - | 0.742 | 0.828 | 0.783 |
+| SVM(poly) | c=0.98,gamma=scale | 0.738 | 0.960 | 0.835 |
+| SVM(rbf) | c=0.98,gamma=scale | 0.690 | 0.679 | 0.685 |
 
-Naive bayes performs evenly on precision of 2 classes, whereas recall of 0 class drags down the performance. Overall, Naive bayes shows fair performance.
+Naive bayes performs evenly on precision and recall, with recall slightly better. Overall, Naive bayes shows fair performance.
 
-Poly-nominal SVM achieves outstanding result in precision for 0 class and recall for 1 class. However, the recall and precision for the counterpart drop severely due to the trade off between precision and recall.
+Poly-nominal SVM obtains outstanding result in recall. However, the precision drop severely due to the trade off between precision and recall.
 
 RBF SVM requires further parameters tuning since theoretically it can simulate the poly kernel performance.
 ## what's next
 
-### parameter tuning
-It is possible to perform a grid search to find the optimal hyper-params.
-
-It would be helpful to put training arguments to a yaml file for parameter tuning.
-### handle overfitting
+### model optimization
+#### handling overfitting
 The preliminary experiments on validation data show both SVMs and Naive bayes overfit the training data easily. The performances drop significantly when models are tested on test data compared with validation data.
 
-Increasinthe data variety, performing feature selection, adding regularization could help in our scenario.
+Increasing the data variety, performing feature selection, adding regularization could help in our scenario.
+#### hyper-parameter tuning
+It is possible to perform a grid search to find the optimal hyper-params.
 
-### BERT fine-tuning
+It would be helpful to isolate training arguments to a yaml file for parameter tuning.
+### Feature expansion
+making use of the meta info such as author: if possible, learn author embeddings. The hypothesis is some authors are fake news maker.
+
+### Model exploration
 BERT bases on the Transformer which takes good care of long input sequence whereas RNN like models may suffer from long dependency issue.
-### other possible improvement
-* making use of the meta info such as author: if possible, learn author embeddings. The hypothesis is some authors are fake news maker.
-
-* The text length is limited due to limited computation resources. For a long text classification task, one may use a sliding window on a long doc (with overlaps).
-The sliding window divides the doc into a few parts. Each part, treated as a single doc, is fed into a model. The decision is made by aggregating all sub-docs.
