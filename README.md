@@ -28,8 +28,8 @@ To train a svm classifier and test it on validation data, run:
 ```
 python3 main.py --data_path ../data/train.csv --model svm
 ```
->To specify hyper-parameters for SVM, use
-```--svm_c```, ```--svm_gamma```, ```--svm_kernel```
+>To specify hyper-parameters for SVM, modify
+```svm_c```, ```svm_gamma```, ```svm_kernel``` in config.yaml
 
 To train a Naive bayes classifier and test it on validation data, run:
 ```
