@@ -72,30 +72,26 @@ The average article length is around 780.
 
 ## Data preprocessing
 Step: 1. An article is a long document that consists of title, author, and text where text may contain multiple lines of sentences. To determine
-the boundary of an article, rules below are defined to detect article boundary:
-    * the last line of an article contains a label at the end;
-    * the next line is an new article with a "strictly increasing by 1" #id or the end of the file.
+the boundary of an article, the rules below are defined to detect article boundary:
+
+  * the last line of an article contains a label at the end;
+  * the next line is a new article with a "strictly increasing by 1" #id or the end of the file.
 
 Example:
 
-*2,Why theTruth Might Get You Fired,Consortiumnews.com,"Why the Truth Might Get You Fired...*\
-*By Lawrence Davidson...*\
+*2,Why theTruth Might Get You Fired,Consortiumnews.com,"Why the Truth Might...*\
 *...*\
-*Hope springs eternal.,1*\
+*...*\
+*...Hope springs eternal.,1*\
 *3,15 Civilians Killed In Single US Airstrike...*
 
-Article 2 consists of 4 lines where the label (1) is shown in the last line. Article 3 starts at the fifth line.
-The rules includes 1-4 lines as article 2.
+>Article 2 consists of 4 lines where the label (1) is shown in the last line. Article 3 starts at the fifth line.
+The rules include 1-4 lines as article 2.
 
-2. Since the training dataset is balanced and all features are text, the features are concatenated to form a longer text.
+Step 2. Since the training dataset is balanced and all features are text, the features are concatenated to form a longer text.
 
 
-3. The nan values are filled with a default token to prevent missing values.*
-<!--- 
-The max article length is limited to 128 where the exceeding part is truncated and the missing part is filled with padding.
-
-Note: to accelerate BERT tokenizer, the text is pre-trimmed.
--->
+Step 3. The NaN values are filled with a default token to prevent missing values.*
 
 ## The models
 Base models: a naive bayes classifier 
@@ -103,10 +99,10 @@ Base models: a naive bayes classifier
 First iteration: a SVM classifier
 
 * Naive bayes is often used for spam detection, similar to Fake news detection.
-* SVM is a strong baseline for classification problem, it is faster than neural nets in general.
+* SVM is a strong baseline for classification problems, it is faster than neural nets in general.
 
 ### feature extraction
-The n-gram features are extracted, which results in over 3000 dimensions feature vectors.The long articles alleviate the matrix sparsity issue to a certain extent.
+The n-gram features are extracted, which results in over 3000 dimensions feature vectors. The long articles alleviate the matrix sparsity issue to a certain extent.
 To reduce the computation overhead and avoid over-fitting the data, the feature dimension is trimmed.
 
 
@@ -116,7 +112,7 @@ F1 score is preferable to accuracy.
 
 The cost expense of type I error and type II error are unclear, so the precision, recall and F1 score are listed.
 
-Belows are Precision, recall and F1 scores on test data.
+Below are Precision, recall and F1 scores on test data.
 
 | model | hyper-param | Precision | Recall | F1 score |
 | :---: | :---: | :---: | :---: | :---: |
@@ -126,7 +122,7 @@ Belows are Precision, recall and F1 scores on test data.
 
 Naive bayes performs evenly on precision and recall, with recall slightly better. Overall, Naive bayes shows fair performance.
 
-Poly-nominal SVM obtains outstanding result in recall. However, the precision drop severely due to the trade off between precision and recall.
+Poly-nominal SVM obtains outstanding recall. However, the precision drops severely due to the trade-off between precision and recall.
 
 RBF SVM requires further parameters tuning since theoretically it can simulate the poly kernel performance.
 ## what's next
@@ -145,5 +141,5 @@ It would be helpful to isolate training arguments to a yaml file while parameter
 Make use of the Meta info such as author. The hypothesis is some authors are fake news maker. If possible, learn author embeddings.
 
 ### Model exploration
-Build a neural nets and leverage transfer learning to help classification, such as BERT.
+Build a neural net and leverage transfer learning to help classification, such as BERT.
 BERT is a powerful pre-trained language model that can be fine-tuned for down stream tasks.
