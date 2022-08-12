@@ -84,7 +84,7 @@ Before step 1:
 
 | id | title | author | text | label |
 | :---: | :---: | :---: | :---: | :---: |
-| 1 | "FLYNN: Hillary Clinton... | Daniel J. Flynn | "Ever get the feeling your... | 0 |
+| 1 | "FLYNN: Hillary Clinton... | Daniel J. Flynn | ...inspires dangerous delusions." | 0 |
 | 2 | Why the Truth Might... | Consortiumnews.com | "Why the Truth Might Get... |  |
 |   |  |  | The tension between... |  |
 |   |  |  | ...Hope springs eternal." | 1 |
@@ -94,7 +94,7 @@ After step 1:
 
 | id | title | author | text | label |
 | :---: | :---: | :---: | :---: | :---: |
-| 1 | "FLYNN: Hillary Clinton... | Daniel J. Flynn | "Ever get the feeling your... | 0 |
+| 1 | "FLYNN: Hillary Clinton... | Daniel J. Flynn | ...inspires dangerous delusions." | 0 |
 | 2 | Why the Truth Might... | Consortiumnews.com | "Why the Truth Might Get... | 1 |
 | 3 | 15 Civilians Killed... | Jessica Purkiss | "Videos 15 Civilians... | 1 |
 
@@ -104,9 +104,9 @@ Example after step 2:
 
 | id | article | label |
 | :---: | :---: | :---: |
-| 1 | "FLYNN: Hillary Clinton... | 0 |
-| 2 | Why the Truth Might... | 1 |
-| 3 | 15 Civilians Killed... | 1 |
+| 1 | "FLYNN: Hillary Clinton...inspires dangerous delusions." | 0 |
+| 2 | Why the Truth Might...Hope springs eternal." | 1 |
+| 3 | 15 Civilians Killed..., | 1 |
 
 
 Step 3. The NaN values are filled with a default token to prevent missing values.
