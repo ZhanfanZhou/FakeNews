@@ -2,6 +2,8 @@ import datetime
 import json
 import pandas as pd
 from sklearn.model_selection import train_test_split
+import yaml
+from argparse import Namespace
 
 DEFAULT_TOKEN = "[EMPTY]"
 
@@ -22,7 +24,8 @@ class DataReader:
             X_test, Y_test = DataReader._read_test(args.test_path, args.test_label_path)
             return X_train, X_test, Y_train, Y_test
 
-        X_train, X_vali, Y_train, Y_vali = train_test_split(X_train, Y_train, test_size=0.2, random_state=args.seed)
+        X_train, X_vali, Y_train, Y_vali = train_test_split(X_train, Y_train, test_size=args.validation_size,
+                                                            random_state=args.seed)
         return X_train, X_vali, Y_train, Y_vali
 
     @staticmethod
@@ -138,3 +141,14 @@ def save_log(args, result: str):
         f.write(result + '\n')
         f.write(json.dumps(vars(args))+'\n')
 
+
+def load_config(args):
+    """
+    load hyper-parameters in external .yaml file
+    """
+    with open(args.config, 'r') as f:
+        config = yaml.load(f.read(), Loader=yaml.FullLoader)
+    args = vars(args)
+    args.update(config['parameters'])
+    args = Namespace(**args)
+    return args

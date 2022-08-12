@@ -137,7 +137,6 @@ Increasing the data variety, performing feature selection, adding regularization
 #### hyper-parameter tuning
 It is possible to perform a grid search to find the optimal hyper-params.
 
-It would be helpful to isolate training arguments to a yaml file while parameter tuning.
 ### Feature expansion
 Make use of the Meta info such as author. The hypothesis is some authors are fake news maker. If possible, learn author embeddings.
 

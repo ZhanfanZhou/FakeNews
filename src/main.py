@@ -4,7 +4,7 @@ curPath = os.path.abspath(os.path.dirname(__file__))
 rootPath = os.path.split(curPath)[0]
 sys.path.append(rootPath)
 from src.build_model import Classifier
-from src.utils import DataReader
+from src.utils import DataReader, load_config
 from src.encode_feature import FeatureEncoder
 from argparse import ArgumentParser
 
@@ -19,11 +19,9 @@ def main():
     parser.add_argument("--seed", type=int, default=512)
     parser.add_argument("--test", action='store_true')
     parser.add_argument("--log", action='store_true')
-    parser.add_argument('--ngram', nargs='+', type=int, default=(1, 1))
-    parser.add_argument('--svm_c', type=float, default=0.98)
-    parser.add_argument('--svm_gamma', type=str, default='scale')
-    parser.add_argument('--svm_kernel', type=str, default='rbf')
+    parser.add_argument('--config', type=str, default='../config.yaml')
     args = parser.parse_args()
+    args = load_config(args)
 
     # load dataset
     print('loading data')
