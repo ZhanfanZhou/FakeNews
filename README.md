@@ -80,26 +80,42 @@ the boundary of an article, the rules below are defined to detect article bounda
 
 Example:
 
-*2,Why theTruth Might Get You Fired,Consortiumnews.com,"Why the Truth Might...*\
-*...*\
-*...*\
-*...Hope springs eternal.,1*\
-*3,15 Civilians Killed In Single US Airstrike...*
+Before step 1:
 
->Article 2 consists of 4 lines where the label (1) is shown in the last line. Article 3 starts at the fifth line.
-The rules include 1-4 lines as article 2.
+| id | title | author | text | label |
+| :---: | :---: | :---: | :---: | :---: |
+| 1 | "FLYNN: Hillary Clinton... | Daniel J. Flynn | "Ever get the feeling your... | 0 |
+| 2 | Why the Truth Might... | Consortiumnews.com | "Why the Truth Might Get... |  |
+|   |  |  | The tension between... |  |
+|   |  |  | ...Hope springs eternal." | 1 |
+| 3 | 15 Civilians Killed... | Jessica Purkiss | "Videos 15 Civilians... |  |
+After step 1:
+
+| id | title | author | text | label |
+| :---: | :---: | :---: | :---: | :---: |
+| 1 | "FLYNN: Hillary Clinton... | Daniel J. Flynn | "Ever get the feeling your... | 0 |
+| 2 | Why the Truth Might... | Consortiumnews.com | "Why the Truth Might Get... | 1 |
+| 3 | 15 Civilians Killed... | Jessica Purkiss | "Videos 15 Civilians... | 1 |
 
 Step 2. Since the training dataset is balanced and all features are text, the features are concatenated to form a longer text.
+
+Example after step 2:
+
+| id | article | label |
+| :---: | :---: | :---: |
+| 1 | "FLYNN: Hillary Clinton... | 0 |
+| 2 | Why the Truth Might... | 1 |
+| 3 | 15 Civilians Killed... | 1 |
 
 
 Step 3. The NaN values are filled with a default token to prevent missing values.
 
 ## The models
 Base models: a naive bayes classifier 
+* Naive bayes is often used for spam detection, similar to Fake news detection.
 
 First iteration: a SVM classifier
 
-* Naive bayes is often used for spam detection, similar to Fake news detection.
 * SVM is a strong baseline for classification problems, it is faster than neural nets in general.
 
 ### feature extraction
@@ -130,8 +146,9 @@ RBF SVM requires further parameters tuning since theoretically it can simulate t
 
 ### Model optimization
 #### handling overfitting
-The preliminary experiments on validation data show both SVMs and Naive bayes overfit the training data easily.
-The performances drop significantly when models are tested on test data compared with validation data.
+The preliminary experiments on validation data(20% of the training data) show both SVMs and Naive bayes overfit the training data easily.
+
+The performances(F1 score) drop significantly from 98.9% on validation data to around 70% on test data.
 
 Increasing the data variety, performing feature selection, adding regularization could help in our scenario.
 #### hyper-parameter tuning
