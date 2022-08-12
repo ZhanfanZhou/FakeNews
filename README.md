@@ -54,15 +54,21 @@ To know more about the details, refer to main.py
 ## Dataset overview
 
 The training dataset has over 20,000 articles with fields for the article title, author, and text.
+
 The label field is the outcome variable where a 1 indicates the article is unreliable and a 0 indicates the article is reliable.
 The ratio between positive and negative class is balanced.
-The average article length is around 780.
+
 
 | dataset | 0 class | 1 class | total |
 | :---: | :---: | :---: | :---: |
 | train.csv | 10413 | 10387 | 20800 |
-| test.csv | - | - | 5200 |
+| test.csv | 2339 | 2861 | 5200 |
 
+The length of articles are inspected:
+
+![alt text](https://github.com/ZhanfanZhou/FakeNews/blob/master/data.png)
+
+The average article length is around 780.
 
 ## Data preprocessing
 Step: 1. An article is a long document that consists of title, author, and text where text may contain multiple lines of sentences. To determine
@@ -93,14 +99,14 @@ Note: to accelerate BERT tokenizer, the text is pre-trimmed.
 
 ## The models
 Base models: a naive bayes classifier 
+
 First iteration: a SVM classifier
 
 * Naive bayes is often used for spam detection, similar to Fake news detection.
 * SVM is a strong baseline for classification problem, it is faster than neural nets in general.
-### SVM hyper-parameters
 
 ### feature extraction
-The n-gram features are extracted, which results in over 3000 dimensions feature vectors. The long articles alleviate the matrix sparsity issue to a certain extent.
+The n-gram features are extracted, which results in over 3000 dimensions feature vectors.The long articles alleviate the matrix sparsity issue to a certain extent.
 To reduce the computation overhead and avoid over-fitting the data, the feature dimension is trimmed.
 
 
@@ -125,17 +131,19 @@ Poly-nominal SVM obtains outstanding result in recall. However, the precision dr
 RBF SVM requires further parameters tuning since theoretically it can simulate the poly kernel performance.
 ## what's next
 
-### model optimization
+### Model optimization
 #### handling overfitting
-The preliminary experiments on validation data show both SVMs and Naive bayes overfit the training data easily. The performances drop significantly when models are tested on test data compared with validation data.
+The preliminary experiments on validation data show both SVMs and Naive bayes overfit the training data easily.
+The performances drop significantly when models are tested on test data compared with validation data.
 
 Increasing the data variety, performing feature selection, adding regularization could help in our scenario.
 #### hyper-parameter tuning
 It is possible to perform a grid search to find the optimal hyper-params.
 
-It would be helpful to isolate training arguments to a yaml file for parameter tuning.
+It would be helpful to isolate training arguments to a yaml file while parameter tuning.
 ### Feature expansion
-making use of the meta info such as author: if possible, learn author embeddings. The hypothesis is some authors are fake news maker.
+Make use of the Meta info such as author. The hypothesis is some authors are fake news maker. If possible, learn author embeddings.
 
 ### Model exploration
-BERT bases on the Transformer which takes good care of long input sequence whereas RNN like models may suffer from long dependency issue.
+Build a neural nets and leverage transfer learning to help classification, such as BERT.
+BERT is a powerful pre-trained language model that can be fine-tuned for down stream tasks.
