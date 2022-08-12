@@ -128,20 +128,6 @@ def _contains_label(text: str):
     return text.endswith(",1") or text.endswith(",0")
 
 
-def analyze_data(df_articles, df_labels):
-    """
-    simple dataset analysis, inspect the label distribution and average article length
-    :param df_articles: a dataframe
-    :param df_labels: a corresponding label dataframe
-    """
-    df_articles.info()
-    df = pd.concat([df_articles, df_labels], axis=1)
-    df.columns = ['article', 'label']
-    print("label distribution: \n", df.groupby("label").count().reset_index())
-    length = df['article'].apply(lambda text: len(text.replace('/n', ' ').split(' ')))
-    print(f"average article length: {int(length.mean())}")
-
-
 def save_log(args, result: str):
     """
     save args and result to args.log_path
@@ -151,3 +137,4 @@ def save_log(args, result: str):
     with open(log_name, 'w') as f:
         f.write(result + '\n')
         f.write(json.dumps(vars(args))+'\n')
+

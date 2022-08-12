@@ -4,7 +4,7 @@ curPath = os.path.abspath(os.path.dirname(__file__))
 rootPath = os.path.split(curPath)[0]
 sys.path.append(rootPath)
 from src.build_model import Classifier
-from src.utils import DataReader, analyze_data
+from src.utils import DataReader
 from src.encode_feature import FeatureEncoder
 from argparse import ArgumentParser
 
@@ -12,7 +12,7 @@ from argparse import ArgumentParser
 def main():
     parser = ArgumentParser()
     parser.add_argument("--model", type=str, default="svm")
-    parser.add_argument("--data_path", type=str, default="../data/train.csv")
+    parser.add_argument("--data_path", type=str, default="../data/toy_train.csv")
     parser.add_argument("--test_path", type=str, default="../data/test.csv")
     parser.add_argument("--test_label_path", type=str, default="../data/labels.csv")
     parser.add_argument("--log_path", type=str, default="../out")
@@ -28,7 +28,6 @@ def main():
     # load dataset
     print('loading data')
     X_train, X_test, Y_train, Y_test = DataReader.load_data(args)
-    analyze_data(X_train, Y_train)
     # featurize
     X_train, X_test = FeatureEncoder(args).encode(X_train, X_test)
     # training and testing
@@ -42,3 +41,14 @@ def main():
 
 if __name__ == '__main__':
     main()
+# how to install? setup
+# svm
+# nb
+# for more details refer to... section
+#
+# avg length bin huatu
+#
+#
+# input yangzi
+#
+# expanding feature
