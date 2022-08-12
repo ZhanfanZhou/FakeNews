@@ -89,6 +89,7 @@ Before step 1:
 |   |  |  | The tension between... |  |
 |   |  |  | ...Hope springs eternal." | 1 |
 | 3 | 15 Civilians Killed... | Jessica Purkiss | "Videos 15 Civilians... |  |
+
 After step 1:
 
 | id | title | author | text | label |
